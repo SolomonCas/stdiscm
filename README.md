@@ -1,9 +1,4 @@
-# CSSECDV
- 
-Castillo, Solomon Nivron
-Lim, Aurelius Justin
-Manalo, Jaime Luis
-CSSECDV - S11
+# STDISCM
 
 # Prerequisite:
 - Already installed MySQL Workbench
