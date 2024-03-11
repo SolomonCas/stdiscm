@@ -1,0 +1,306 @@
+<html>
+<head>
+    <title>Administration</title>
+    <script>
+        window.addEventListener('DOMContentLoaded', async () => {
+                try {
+                const response = await fetch('/getPosts');
+                const data = await response.json();
+                const postsContainer = document.getElementById('postsContainer');
+
+                // Clear existing content inside the postsContainer
+                postsContainer.innerHTML = '';
+
+                // Loop through the fetched posts and create elements to display them
+                data.posts.forEach((post) => {
+                    const postElement = document.createElement('div');
+                    postElement.innerHTML = `
+                    <h3>${post.username}</h3>
+                    <p>${post.content}</p>
+                    <hr>
+                    `;
+                    postsContainer.appendChild(postElement);
+                });
+                } catch (error) {
+                console.error('Error fetching posts:', error);
+                }
+        });
+        function openModal(x){
+            console.log('editModal' + x)
+            const modal = document.getElementById('editModal'+x);
+            const overlay = document.getElementById('overlay');
+            overlay.style.display = 'block';
+            modal.style.display = 'block';
+           
+        }
+        function closeModal(x){
+            const modal = document.getElementById('editModal'+x);
+            const overlay = document.getElementById('overlay');
+            overlay.style.display = 'none';
+            modal.style.display = 'none';
+            location.reload();
+        }
+        function updateFileLabel(x) {
+         
+            const fileInput = document.getElementById('profilephoto' + x);
+            const fileLabel = document.getElementById('filelabel' + x);
+               
+            // Check if a file is selected
+            if (fileInput.files.length > 0) {
+                // Update the label text to show the selected file name
+                console.log(fileInput.files[0].name)
+                fileLabel.innerHTML = fileInput.files[0].name;
+                console.log(fileLabel.innerHTML)
+                console.log('file selected')
+            } else {
+                // If no file is selected, show the default label text
+                fileLabel.innerHTML = 'Change Profile Photo';
+                console.log('No file selected')
+            }
+        }
+
+        function deleteModal(x){
+
+            const modal = document.getElementById('deleteModal'+x);
+            const overlay = document.getElementById('overlay');
+            overlay.style.display = 'block';
+            modal.style.display = 'block'
+        }
+
+        function closeDeleteModal(x){
+            const modal = document.getElementById('deleteModal'+x);
+             const overlay = document.getElementById('overlay');
+            overlay.style.display = 'none';
+            modal.style.display = 'none';
+            location.reload();
+        }
+
+    </script>
+
+    <style>
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
+            z-index: 9998; /* Ensure it appears behind the modal but above the rest of the content */
+            display: none; /* Initially hidden */
+        }
+        .container {
+            max-width: 600px;
+            margin: 50px auto 0;
+            padding: 20px;
+            background-color: #f1f1f1;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            text-align: center;
+            font-family: "Arial", sans-serif;
+        }
+
+        .container h1,
+        .container h2,
+        .container h3,
+        .container p {
+            font-size: 18px;
+            line-height: 1.4;
+        }
+
+        td{
+            padding:5px;
+        }
+        .logoutbutton {
+           padding: 10px 35px;
+            background-color: #e91d1d;
+        }
+        .icon{
+            padding:10px;
+            background-color: transparent;
+        }
+       
+        .editModal{
+            position: absolute;
+            top:30%;
+            left:10%;
+            width:70%;
+            border-radius:5px;
+            border:1px solid black;
+            background-color: rgb(255, 255, 255); /* semi-transparent background */
+            display:block;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999; /* Ensure it appears on top of other elements */
+        }
+        .profilePhoto{
+            display:none;
+        }
+        .edit-picture-btn{
+            padding: 10px 20px;
+            border: none;
+            border-radius: 3px;
+            background-color: #428bca; 
+            color: #fff;
+            cursor: pointer;
+            font-size: 16px;
+            display: inline-block; 
+        }
+        .editModal button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 3px;
+            background-color: #428bca;  
+            color: #fff;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+        }
+        .editModal h2 {
+            margin: 0;
+            padding: 10px;
+            background-color: #f1f1f1; /* Add a light background color to the header */
+            border-top-left-radius: 5px;
+            border-top-right-radius: 5px;
+        }
+
+        .editModal form {
+            padding: 10px;
+        }
+
+            /* Optional styling to center the modal vertically */
+        .editModal {
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        button{
+            padding: 10px 20px;
+            border: none;
+            border-radius: 3px;
+            background-color: #428bca;  
+            color: #fff;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+        }
+
+    </style>
+</head>
+<body>
+     <div class="overlay" id="overlay"></div>
+    <div class="container">
+        <h1>Welcome Admin!</h1>
+        <h1>User Accounts</h1>
+    <table>
+        <tr>
+            <th>
+                Profile Photo
+            </th>
+            <th>
+                User Emails
+            </th>
+            <th>
+                Full Name
+            </th>
+            <th>
+                Phone No.
+            </th>
+        </tr>
+       
+        {{#each users}}
+        <!-- Edit User Modal -->
+        
+        <div id="editModal{{this.email}}" class="editModal" style="display:none">
+            <h2>Edit User</h2>
+            <form id="editForm" action="/editUser" method="POST" enctype="multipart/form-data">
+                <input type="hidden" id="originalemail" name="originalemail" value="{{this.email}}">
+                <label>Email:</label>
+                <input type="text" id="email" name="email" required value="{{this.email}}">
+                <br>
+                <label>Full Name:</label>
+                <input type="text" id="fullname" name="fullname" required value="{{this.fullName}}">
+                <br>
+                <label>Edited Password:</label>
+                <input type="password" id="pass" name="pass" placeholder="Ignore If No Edit">
+                <br>
+                <label>Phone No.:</label>
+                <input type="text" id="phone" name="phone" required value="{{this.phoneNumber}}">
+                <br>
+                    <label for="profilephoto{{this.email}}" class="edit-picture-btn" id="filelabel{{this.email}}">Change Profile Photo</label>
+                    <input type="file" id="profilephoto{{this.email}}" name="profilephoto" class="profilephoto" accept="image/jpeg, image/png, image/gif" onchange="updateFileLabel('{{this.email}}')">
+                <button type="submit" onclick="closeModal('{{this.email}}')">Save</button>
+                <button type="button" onclick="closeModal('{{this.email}}')">Cancel</button>
+            </form>
+
+        </div>
+        <div id="deleteModal{{this.email}}" class="editModal" style="display:none">
+            <h2>Confirm Delete?</h2>
+                <form id="deleteForm" action="/deleteUser" method="POST" enctype="multipart/form-data">
+                    <input type="hidden" id="emailToBeDeleted" name="emailToBeDeleted" value="{{this.email}}">
+                    <button type="submit" onclick="closeDeleteModal('{{this.email}}')">
+                        Delete
+                    </button>
+                    <button type="button" onclick="closeDeleteModal('{{this.email}}')">
+                        Cancel
+                    </button>
+
+                </form>
+        </div>
+            <tr>
+                <td>
+                    <img src="{{this.profilePhoto}}" alt="Profile Photo" style="width: 100px; height: auto;">
+                </td>
+                <td>
+                    {{this.email}}
+                </td>
+                <td>
+                    {{this.fullName}}
+                </td>
+                <td>
+                    {{this.phoneNumber}}
+                </td>
+                <td>
+                    <button class="icon" onclick="openModal('{{this.email}}')">
+                        <svg fill="#000000" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" 
+                        width="25px" height="25px" viewBox="0 0 494.936 494.936"
+                        xml:space="preserve">
+                            <g>
+                                <g>
+                                    <path d="M389.844,182.85c-6.743,0-12.21,5.467-12.21,12.21v222.968c0,23.562-19.174,42.735-42.736,42.735H67.157
+                                        c-23.562,0-42.736-19.174-42.736-42.735V150.285c0-23.562,19.174-42.735,42.736-42.735h267.741c6.743,0,12.21-5.467,12.21-12.21
+                                        s-5.467-12.21-12.21-12.21H67.157C30.126,83.13,0,113.255,0,150.285v267.743c0,37.029,30.126,67.155,67.157,67.155h267.741
+                                        c37.03,0,67.156-30.126,67.156-67.155V195.061C402.054,188.318,396.587,182.85,389.844,182.85z"/>
+                                    <path d="M483.876,20.791c-14.72-14.72-38.669-14.714-53.377,0L221.352,229.944c-0.28,0.28-3.434,3.559-4.251,5.396l-28.963,65.069
+                                        c-2.057,4.619-1.056,10.027,2.521,13.6c2.337,2.336,5.461,3.576,8.639,3.576c1.675,0,3.362-0.346,4.96-1.057l65.07-28.963
+                                        c1.83-0.815,5.114-3.97,5.396-4.25L483.876,74.169c7.131-7.131,11.06-16.61,11.06-26.692
+                                        C494.936,37.396,491.007,27.915,483.876,20.791z M466.61,56.897L257.457,266.05c-0.035,0.036-0.055,0.078-0.089,0.107
+                                        l-33.989,15.131L238.51,247.3c0.03-0.036,0.071-0.055,0.107-0.09L447.765,38.058c5.038-5.039,13.819-5.033,18.846,0.005
+                                        c2.518,2.51,3.905,5.855,3.905,9.414C470.516,51.036,469.127,54.38,466.61,56.897z"/>
+                                </g>
+                            </g>
+                        </svg>
+                    </button>
+                </td>
+                <td>
+                    <button class="icon" onclick="deleteModal('{{this.email}}')">
+                        <svg width="25px" height="25px" viewBox="-5.1 0 85.5 85.5" xmlns="http://www.w3.org/2000/svg" fill="#000000"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <g id="Group_14" data-name="Group 14" transform="translate(-837.1 -670)"> <path id="Path_40" data-name="Path 40" d="M905.8,703.3H843.7a4.653,4.653,0,0,1-4.6-4.6v-9.2a4.653,4.653,0,0,1,4.6-4.6h62.1a4.653,4.653,0,0,1,4.6,4.6v9.2A4.653,4.653,0,0,1,905.8,703.3Z" fill="none" stroke="#000000" stroke-miterlimit="10" stroke-width="4"></path> <path id="Path_41" data-name="Path 41" d="M901.6,706v41c-.7.5-3.2,1.9-10,3.1a108.881,108.881,0,0,1-17.2,1.5,92.907,92.907,0,0,1-16.8-1.5c-6.6-1.2-8.9-2.5-9.6-3V706h53.6m4-4H844v45.7c0,5.3,18.5,7.8,30.4,7.8s31.2-2.5,31.2-7.8V702Z" fill="#000000"></path> <line id="Line_17" data-name="Line 17" y2="11.9" transform="translate(862.7 721.6)" fill="none" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-width="4"></line> <line id="Line_18" data-name="Line 18" y2="18.9" transform="translate(874.9 718.1)" fill="none" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-width="4"></line> <line id="Line_19" data-name="Line 19" y2="11.9" transform="translate(886.9 721.6)" fill="none" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-width="4"></line> <path id="Path_42" data-name="Path 42" d="M859,684.2S857.3,672,873.9,672s16.7,12.2,16.7,12.2" fill="none" stroke="#000000" stroke-miterlimit="10" stroke-width="4"></path> </g> </g></svg>
+                    </button>
+                </td>
+            </tr>
+        {{/each}}
+    </table>
+                    
+     <form action="/logout">
+        <button type="submit" class="logoutbutton">Logout</button>
+    </form>
+    </div>
+
+    <div class="container">
+        <h2>User Posts</h2>
+        <form action='/submitPost' method="POST" enctype="multipart/form-data">
+            <input type="text" id="content" name="content">
+            <button type="submit" class="postbutton">Post</button>
+        </form>
+        <div id="postsContainer"></div>
+    </div>
+</body>
+</html>

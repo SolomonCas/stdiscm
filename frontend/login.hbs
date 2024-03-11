@@ -1,0 +1,107 @@
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Login</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f1f1f1;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 500px;
+      margin: 100px auto;
+      padding: 40px;
+      background-color: #fff;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 28px;
+      color: #333;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    label {
+      font-weight: bold;
+      margin-bottom: 10px;
+      width: 120px;
+      display: inline-block;
+      font-size: 18px;
+      color: #333;
+    }
+
+    input[type="email"],
+    input[type="password"] {
+      padding: 12px;
+      margin-bottom: 15px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      width: 500px;
+      font-size: 16px;
+    }
+
+    .button-container {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+    }
+
+    button[type="submit"],
+    button {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 5px;
+      background-color: #4caf50;
+      color: #fff;
+      cursor: pointer;
+      flex: 1;
+      margin-right: 15px;
+      font-size: 18px;
+    }
+
+    button[type="submit"]:hover,
+    button:hover {
+      background-color: #45a049;
+    }
+
+    .register-button {
+      background-color: #3498db;
+    }
+
+    .register-button:hover {
+      background-color: #2980b9;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Login</h1>
+    <form action="/login" method="POST" enctype="multipart/form-data">
+      <div>
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required>
+      </div>
+      <div>
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required>
+      </div>
+      <div class="button-container">
+        <button type="submit">Login</button>
+        <button onclick="window.location.href = '/register';" class="register-button">Register</button>
+      </div>
+    </form>
+  </div>
+</body>
+</html>

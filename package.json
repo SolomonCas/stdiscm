@@ -1,0 +1,30 @@
+{
+  "name": "cssevdv",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon server.js",
+    "debug": "set DEBUG_MODE=true && nodemon server.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^5.1.0",
+    "express": "^4.18.2",
+    "express-fileupload": "^1.4.0",
+    "express-rate-limit": "^6.7.0",
+    "express-session": "^1.17.3",
+    "file-type": "^2.12.0",
+    "fs": "^0.0.1-security",
+    "hbs": "^4.2.0",
+    "mongodb": "^5.6.0",
+    "mongoose": "^7.3.0",
+    "mysql": "^2.18.1",
+    "nodemon": "^2.0.22",
+    "path": "^0.12.7",
+    "validator": "^13.11.0",
+    "winston": "^3.10.0"
+  }
+}

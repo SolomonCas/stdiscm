@@ -1,0 +1,118 @@
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Registration</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f1f1f1;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 500px;
+      margin: 100px auto;
+      padding: 40px;
+      background-color: #fff;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 24px;
+      color: #333;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .fields {
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+    }
+
+    label {
+      font-weight: bold;
+      margin-right: 10px;
+      width: 120px;
+      font-size: 18px;
+      color: #333;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"],
+    input[type="password"] {
+      padding: 12px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+      flex: 1;
+    }
+
+    input[type="file"] {
+      padding: 5px;
+    }
+
+    button[type="submit"] {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 5px;
+      background-color: #4caf50;
+      color: #fff;
+      cursor: pointer;
+      font-size: 18px;
+    }
+
+    button[type="submit"]:hover {
+      background-color: #45a049;
+    }
+
+    p {
+      text-align: center;
+      margin-top: 10px;
+    }
+
+    p a {
+      color: #3498db;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Registration</h2>
+    <form action="/registerdetails" method="POST" enctype="multipart/form-data">
+      <div class="fields">
+        <label for="fullname">Full Name:</label>
+        <input type="text" id="fullname" name="fullname" required>
+      </div>
+      <div class="fields">
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required>
+      </div>
+      <div class="fields">
+        <label for="phone">Phone Number:</label>
+        <input type="tel" id="phone" name="phone" required>
+      </div>
+      <div class="fields">
+        <label for="profilephoto">Profile Photo:</label>
+        <input type="file" id="profilephoto" name="profilephoto" accept="image/jpeg, image/png, image/gif" required>
+      </div>
+      <div class="fields">
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required>
+      </div>
+      <button type="submit">Register</button>
+    </form>
+    <p>Already have an account? <a href="/">Login</a></p>
+  </div>
+</body>
+</html>
