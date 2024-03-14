@@ -115,6 +115,7 @@
                     postElement.innerHTML = `
                     <h3>${post.username}</h3>
                     <p>${post.content}</p>
+                    <img src=${post.postPhoto} alt="Post Photo" style="width: 200px; height: auto;">
                     <hr>
                     `;
                     postsContainer.appendChild(postElement);
@@ -186,6 +187,10 @@
         <h2>User Posts</h2>
         <form action='/submitPost' method="POST" enctype="multipart/form-data">
             <input type="text" id="content" name="content">
+            <div class="fields">
+                <label for="postphoto">Post Photo:</label>
+                <input type="file" id="postphoto" name="postphoto" accept="image/jpeg, image/png, image/gif" required>
+            </div>
             <button type="submit" class="postbutton">Post</button>
         </form>
         <div id="postsContainer"></div>

@@ -29,6 +29,7 @@ const postsTable = `
 CREATE TABLE IF NOT EXISTS posts (
   id INT AUTO_INCREMENT PRIMARY KEY,
   content TEXT NOT NULL,
+  postPhoto VARCHAR(255) NOT NULL,
   userid INT,
   FOREIGN KEY (userid) REFERENCES accounts(id) ON DELETE CASCADE
 )`;

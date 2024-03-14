@@ -59,6 +59,7 @@ const loginLimit = rateLimit({
 app.get('/', ensureNotAuth, (req, res) => {
   res.render('login.hbs');
 });
+
 // Handle the login form submission
 app.post('/login', loginLimit, ensureNotAuth, async (req, res) => {
   const email = req.body.email;
@@ -921,32 +922,101 @@ app.post('/deleteUser',ensureAuth, (req, res)=>{
   }
   
 });
+
 app.get('/getPosts', ensureAuth, (req, res)=>{
   try{
-    let postsquery = "SELECT posts.id, posts.content, accounts.fullName AS username FROM posts INNER JOIN accounts ON posts.userid = accounts.id ORDER BY posts.id DESC;"
+    if(debugMode){
+      logger.debug("AT GET POSTS");
+    }
+    let postsquery = "SELECT posts.id, posts.content, posts.postPhoto, accounts.fullName AS username FROM posts INNER JOIN accounts ON posts.userid = accounts.id ORDER BY posts.id DESC;"
     Account.node.query(postsquery, (err, posts)=>{
       if (err) {
         if(debugMode){
-          logger.debug(err);
+          logger.error(err);
         }
         res.status(500).json({ error: 'Error fetching posts' });
       } else {
+        if(debugMode){
+          logger.debug("GET POSTS");
+        }
         res.status(200).json({ posts });
       }
     })
   }
   catch{
-    // console.log("error fetching posts");
     logger.error("error fetching posts")
   }
 })
 
 app.post('/submitPost',ensureAuth, (req, res)=>{
   try{
+    if(debugMode){
+      logger.debug('SUBMIT POST');
+    }
     const author = req.session.email;
     const content = v.escape(req.body.content);
+    const postPhoto = req.files.postphoto;
+
+    // Check if any of the input fields are empty
+    if (!postPhoto || !author) {
+      fs.unlink(postPhoto.tempFilePath, (err) => {
+        if (err) {
+          if(debugMode){
+            logger.error('Failed to delete temporary file');
+          
+            logger.debug(err);
+          }
+        } else {
+          logger.debug('Temporary file deleted');
+        }
+      });
+      logger.info('Failed to Register User', { error:"Please fill in all fields"});
+      logger.debug('Please fill in all fields')
+      return res.send('<script>alert("Please fill in all fields"); window.location.href = "/register";</script>');
+    }
+
+    // Check if the uploaded file is an image
+    const fileMimeType = mime.lookup(postPhoto.name);
+    if (!fileMimeType || !fileMimeType.startsWith('image/')) {
+      fs.unlink(postPhoto.tempFilePath, (err) => {
+        if (err) {
+          if(debugMode){
+            logger.error('Failed to delete temporary file');
+           
+            logger.debug(err);
+          }
+        } else {
+          logger.debug('Temporary file deleted');
+        }
+      });
+      logger.info('Failed to Register User', {error: "Invalid file format. Please upload an image file."});
+      logger.debug("Invalid file format. Please upload an image file.")
+      return res.send('<script>alert("Invalid file format. Please upload an image file."); window.location.href = "/register";</script>');
+    }
+
+    const fileData = fs.readFileSync(postPhoto.tempFilePath);
+
+    // Validate the magic number
+    const fileTypeResult = fileType(fileData);
+    if (!fileTypeResult || !fileTypeResult.mime.startsWith('image/')) {
+      fs.unlink(postPhoto.tempFilePath, (err) => {
+        if (err) {
+          if(debugMode){
+            logger.error('Failed to delete temporary file');
+           
+            logger.debug(err);
+          }
+        } else {
+          logger.debug('Temporary file deleted');
+        }
+      });
+      logger.info('Failed to Register User', { error:"Invalid file format. Please upload an image file."});
+      logger.debug("Invalid file format. Please upload an image file.")
+      return res.send('<script>alert("Invalid file format. Please upload an image file."); window.location.href = "/register";</script>');
+    }
+
     let userquery = "Select * from accounts where email = ?";
-    let insertquery = "Insert into posts (content, userid) VALUES(?, ?)";
+    let insertquery = "Insert into posts (content, postPhoto, userid) VALUES(?, ?, ?)";
     Account.node.query(userquery, [author], (err, user)=>{
       user = Object.values(user[0])
       if(err){
@@ -957,7 +1027,7 @@ app.post('/submitPost',ensureAuth, (req, res)=>{
         return res.send('No User')
       }
       else{
-        Account.node.query(insertquery, [content, user[0]], (err, result)=>{
+        Account.node.query(insertquery, [content, "images/" + postPhoto.name, user[0]], (err, result)=>{
           if(err){
             // console.log(err)
             logger.error('Failed Submission of a post', { email: req.session.email});
@@ -969,15 +1039,28 @@ app.post('/submitPost',ensureAuth, (req, res)=>{
           else{
             // console.log(result)
             logger.debug(result);
-            if(user[6] == 'admin'){
-              logger.info('Admin submitted post', { email: req.session.email, content:content});
-              res.redirect('/administration')
-            }
-            else{
-              logger.info('User submitted post', { email: req.session.email, content:content});
-              res.redirect('/main')
-            }
-            
+            const uploadPath = path.join(__dirname, 'images', postPhoto.name);
+                  postPhoto.mv(uploadPath, (error) => {
+                    if (error) {
+                      logger.debug("failed to save photo") 
+                      if(debugMode){
+                        logger.debug(error);
+                      }
+                      logger.error('Failed to Register User');
+                    } else { 
+                      if(debugMode){
+                        logger.debug("ADDED")
+                      }
+                      if(user[6] == 'admin'){
+                        logger.info('Admin submitted post', { email: req.session.email, content:content, postPhoto:postPhoto});
+                        res.redirect('/administration')
+                      }
+                      else{
+                        logger.info('User submitted post', { email: req.session.email, content:content, postPhoto:postPhoto});
+                        res.redirect('/main')
+                      }
+                    }
+                  });
           }
         })
       }
