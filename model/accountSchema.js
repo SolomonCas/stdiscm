@@ -1,15 +1,15 @@
-const mysql = require('mysql');
-const bcrypt = require('bcrypt');
-const logger = require('../loggers/logger.js');
+const mysql = require("mysql");
+const bcrypt = require("bcrypt");
+const logger = require("../loggers/logger.js");
 const debugMode = process.env.DEBUG_MODE;
 
 // Create a MySQL connection pool
 const pool = mysql.createPool({
   connectionLimit: 100,
-  host: '192.168.254.117',
-  user: 'root',
-  password: '12345',
-  database: 'accounts',
+  host: "192.168.254.117",
+  user: "root",
+  password: "12345",
+  database: "accounts",
 });
 
 // Define the account table schema
@@ -34,62 +34,55 @@ CREATE TABLE IF NOT EXISTS posts (
   FOREIGN KEY (userid) REFERENCES accounts(id) ON DELETE CASCADE
 )`;
 
-
-
 // Create the accounts table if it doesn't exist
 pool.query(accountTable, (error, results, fields) => {
   if (error) {
-    logger.error('Error creating accounts table');
-    if(debugMode)
-        logger.debug(error);
+    logger.error("Error creating accounts table");
+    if (debugMode) logger.debug(error);
     return;
   }
-  logger.debug('Accounts table created successfully');
+  logger.debug("Accounts table created successfully");
 
   // Create the posts table if it doesn't exist
   pool.query(postsTable, (error, results, fields) => {
     if (error) {
-      logger.error('Error creating posts table');
-      if(debugMode)
-        logger.debug(error);
+      logger.error("Error creating posts table");
+      if (debugMode) logger.debug(error);
       return;
     }
-    logger.debug('Posts table created successfully');
+    logger.debug("Posts table created successfully");
 
-      // Add admin account if it doesn't exist
-      const adminEmail = 'admin@gmail.com';
-      const adminPassword = 'adminacc';
-      const adminRole = 'admin';
-      pool.query(
-        'SELECT * FROM accounts WHERE email = ?',
-        [adminEmail],
-        async (error, results) => {
-          if (error) {
-            logger.error('Error checking for admin account');
-            if(debugMode)
-              logger.debug(error);
-            return;
-          } else if (results.length == 0) {
-            const hashedPassword = await bcrypt.hash(adminPassword, 10);
-            let query =
-              'INSERT INTO accounts (fullName, email, phoneNumber, profilePhoto, password, role) VALUES(?,?,?,?,?,?)';
-            pool.query(
-              query,
-              ['Admin', adminEmail, '00000000000', '', hashedPassword, 'admin'],
-              (err, result) => {
-                if (err) {
-                  logger.error('Admin account not made');
-                  if(debugMode)
-                    logger.debug(error);
-                } else {
-                  logger.debug('Admin account created successfully');
-                }
+    // Add admin account if it doesn't exist
+    const adminEmail = "admin@gmail.com";
+    const adminPassword = "adminacc";
+    const adminRole = "admin";
+    pool.query(
+      "SELECT * FROM accounts WHERE email = ?",
+      [adminEmail],
+      async (error, results) => {
+        if (error) {
+          logger.error("Error checking for admin account");
+          if (debugMode) logger.debug(error);
+          return;
+        } else if (results.length == 0) {
+          const hashedPassword = await bcrypt.hash(adminPassword, 10);
+          let query =
+            "INSERT INTO accounts (fullName, email, phoneNumber, profilePhoto, password, role) VALUES(?,?,?,?,?,?)";
+          pool.query(
+            query,
+            ["Admin", adminEmail, "00000000000", "", hashedPassword, "admin"],
+            (err, result) => {
+              if (err) {
+                logger.error("Admin account not made");
+                if (debugMode) logger.debug(error);
+              } else {
+                logger.debug("Admin account created successfully");
               }
-            );
-          }
+            }
+          );
         }
-      );
-   
+      }
+    );
   });
 });
 
