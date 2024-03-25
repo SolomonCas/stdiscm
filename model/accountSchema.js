@@ -6,7 +6,7 @@ const debugMode = process.env.DEBUG_MODE;
 // Create a MySQL connection pool
 const pool = mysql.createPool({
   connectionLimit: 100,
-  host: 'localhost',
+  host: '192.168.254.117',
   user: 'root',
   password: '12345',
   database: 'accounts',
